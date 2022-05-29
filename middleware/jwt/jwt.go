@@ -19,9 +19,9 @@ import (
 func JWT(level int) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var code int
-
 		code = e.SUCCESS
-		token, _ := c.Cookie("token")
+		token := c.GetHeader("token")
+
 		//token := c.Query("token")
 		if token == "" {
 			code = e.INVALID_PARAMS
@@ -34,11 +34,13 @@ func JWT(level int) gin.HandlerFunc {
 			} else {
 				msg := models.GetUser(claims.Username)
 				if msg.Level > level {
+					fmt.Println(msg.Level, level)
 					code = e.ERROR_INSUFFICIENT_ACCESS_RIGHTS
 				}
 				fmt.Println(msg.Level)
 			}
 		}
+		fmt.Println(code)
 		if code != e.SUCCESS {
 			c.JSON(http.StatusUnauthorized, gin.H{
 				"code": code,
