@@ -57,11 +57,20 @@ func GetUser(c *gin.Context) {
 
 	data := make(map[string]interface{})
 	if userId > 0 {
-		user := models.GetUserInfo(userId)
+		user, err := models.GetUserInfo(userId)
+		// 获取ID不存在则返回参数错误
+		if err != nil {
+			code = e.ERROR_EXIST_USER
+			c.JSON(http.StatusOK, gin.H{
+				"code": code,
+				"msg":  e.GetMsg(code),
+			})
+			return
+		}
 		data["head"] = user.Head
 		data["username"] = user.Username
 		data["level"] = models.GetLevel(user.Level)
-		err := models.UpdateVisitsNumber()
+		err = models.UpdateVisitsNumber()
 		if err != nil {
 			log.Println(err)
 		}

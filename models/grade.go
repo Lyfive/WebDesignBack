@@ -7,6 +7,7 @@ package models
 
 import (
 	"fmt"
+	"log"
 	"webDesign/pkg/e"
 )
 
@@ -52,7 +53,8 @@ func AddGrade(grade Grade) int {
 	db.Model(&Grade{}).Omit("number", "c_id", "mark").Where("number = ? and c_id = ?", grade.Number, grade.CID).First(&gid)
 	if gid > 0 {
 		grade.GID = gid
-		if err := db.Model(&grade).Update("mark", grade.Mark); err != nil {
+		if err := db.Debug().Model(&grade).Update("mark", grade.Mark).Error; err != nil {
+			log.Printf("error:%v", err)
 			return e.ERROR
 		}
 		return e.SUCCESS
@@ -88,7 +90,7 @@ func QueryGrades(matchStr string, isOpen bool) []ViewGrade {
 	return grades
 }
 
-// GetClassCourses 根据class ID获取班级所学课程
+// GetDepartmentCourses  根据class ID获取班级所学课程
 func GetDepartmentCourses(DID uint) []Course {
 	var courses []Course
 	db.Raw("select courses.c_id c_id,courses.title title from dc,courses where dc.d_id = ? and dc.c_id = courses.c_id", DID).

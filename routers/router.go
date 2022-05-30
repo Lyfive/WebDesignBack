@@ -25,13 +25,16 @@ func InitRouter() *gin.Engine {
 	})
 	gin.SetMode(setting.RunMode)
 
-	r.StaticFile("/favicon.ico", "./dist/favicon.ico")
-	r.StaticFile("/22_open.png", "./dist/22_open.png")
-	r.StaticFile("/22_close.png", "./dist/22_close.png")
-	r.StaticFile("/33_open.png", "./dist/33_open.png")
-	r.StaticFile("/33_close.png", "./dist/33_close.png")
-	r.Static("/static", "./dist/static")
-	r.LoadHTMLFiles("dist/index.html")
+	// 静态文件处理
+	{
+		r.StaticFile("/favicon.ico", "./dist/favicon.ico")
+		r.StaticFile("/22_open.png", "./dist/22_open.png")
+		r.StaticFile("/22_close.png", "./dist/22_close.png")
+		r.StaticFile("/33_open.png", "./dist/33_open.png")
+		r.StaticFile("/33_close.png", "./dist/33_close.png")
+		r.Static("/static", "./dist/static")
+		r.LoadHTMLFiles("dist/index.html")
+	}
 
 	// 重定向
 	{
@@ -76,6 +79,7 @@ func InitRouter() *gin.Engine {
 		})
 
 	}
+
 	r.GET("/", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "index.html", "./index.html")
 	})
@@ -88,7 +92,16 @@ func InitRouter() *gin.Engine {
 	users := r.Group("/user")
 	{
 		// 高级注册 可以提权
-		users.POST("/register", jwt.JWT(models.SuperAdmin), v1.Register)
+		users.POST("/register", jwt.JWT(models.Admin), v1.Register)
+
+		// 删除用户，只能删除权限比自己低的用户
+		users.DELETE("/delete", jwt.JWT(models.Admin), v1.DeleteUser)
+
+		// 获取可以修改的用户列表
+		users.GET("/users", jwt.JWT(models.Admin), v1.GetUserList)
+
+		// 修改用户信息 要求被修改者权限比自己低，同时被修改后权限不能比自己高
+		users.PUT("/modify", jwt.JWT(models.Admin), v1.ModifyUser)
 	}
 
 	students := r.Group("/student")
