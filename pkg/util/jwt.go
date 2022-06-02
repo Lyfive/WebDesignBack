@@ -8,6 +8,7 @@ package util
 import (
 	"github.com/golang-jwt/jwt"
 	"time"
+	"webDesign/models"
 	setting "webDesign/pkg"
 )
 
@@ -49,4 +50,27 @@ func ParseToken(token string) (*Claims, error) {
 	}
 
 	return nil, err
+}
+
+
+func CheckToken(token string) bool {
+	if token == "" {
+		return false
+	}
+	claims, err := ParseToken(token)
+	if err != nil {
+		return false
+	}
+	if time.Now().Unix() > claims.ExpiresAt {
+		return false
+	}
+	return true
+}
+
+func GetUserLevel(token string) int {
+	claims, err := ParseToken(token)
+	if err != nil {
+		return 4
+	}
+	return models.GetUser(claims.Username).Level
 }

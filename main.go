@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
-	"webDesign/middleware/crypto"
 	setting "webDesign/pkg"
+	"webDesign/pkg/crypto"
 	"webDesign/routers"
 )
 

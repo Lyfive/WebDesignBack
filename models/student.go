@@ -227,3 +227,10 @@ func DeleteStudents(numbers *[]string) int {
 		return e.SUCCESS
 	}
 }
+
+func TransferStudents(numbers *[]string, sid uint) int {
+	if err := db.Model(&Student{}).Where("number in (?)", *numbers).Update("s_id", sid).Error; err != nil {
+		return e.ERROR
+	}
+	return e.SUCCESS
+}

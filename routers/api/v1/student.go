@@ -60,16 +60,33 @@ func Modify(c *gin.Context) {
 	})
 }
 
+type Numbers struct {
+	Numbers []string `json:"numbers"`
+	ID      uint     `json:"sid"`
+}
+
 func Delete(c *gin.Context) {
-	type Numbers struct {
-		Numbers []string `json:"numbers"`
-	}
 	numbers := Numbers{
 		Numbers: make([]string, 0),
 	}
 	c.BindJSON(&numbers)
 	fmt.Println(numbers)
 	code := models.DeleteStudents(&numbers.Numbers)
+	c.JSON(http.StatusOK, gin.H{
+		"code": code,
+		"msg":  e.GetMsg(code),
+	})
+}
+
+func Transfer(c *gin.Context) {
+	numbers := Numbers{
+		Numbers: make([]string, 0),
+	}
+	c.BindJSON(&numbers)
+	code := e.ERROR
+	if numbers.ID != 0 {
+		code = models.TransferStudents(&numbers.Numbers, numbers.ID)
+	}
 	c.JSON(http.StatusOK, gin.H{
 		"code": code,
 		"msg":  e.GetMsg(code),

@@ -10,9 +10,9 @@ import (
 	"log"
 	"net/http"
 	"regexp"
-	"webDesign/middleware/crypto"
-	"webDesign/middleware/detection"
 	"webDesign/models"
+	"webDesign/pkg/crypto"
+	"webDesign/pkg/detection"
 	"webDesign/pkg/e"
 	"webDesign/pkg/util"
 
@@ -23,6 +23,20 @@ import (
 type user struct {
 	Username string `valid:"Required; MaxSize(50)" json:"username"`
 	Password string `valid:"Required; MaxSize(50)" json:"password"`
+}
+
+// CheckUser 检查token是否过期
+func CheckUser(c *gin.Context) {
+	token := c.GetHeader("token")
+	code := e.SUCCESS
+	if !util.CheckToken(token) {
+		code = e.ERROR_AUTH_CHECK_TOKEN_TIMEOUT
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"code": code,
+		"msg":  e.GetMsg(code),
+	})
 }
 
 func GetUser(c *gin.Context) {
@@ -67,7 +81,8 @@ func GetUser(c *gin.Context) {
 			})
 			return
 		}
-		data["head"] = user.Head
+		data["id"] = user.ID
+		data["head"] = "/static/img/" + user.Head + ".jpg"
 		data["username"] = user.Username
 		data["level"] = models.GetLevel(user.Level)
 		err = models.UpdateVisitsNumber()

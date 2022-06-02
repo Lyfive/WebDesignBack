@@ -7,11 +7,14 @@ package v1
 
 import (
 	"fmt"
+	"github.com/astaxie/beego"
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"webDesign/middleware/jwt"
+	"strconv"
 	"webDesign/models"
+	"webDesign/pkg/crypto"
 	"webDesign/pkg/e"
+	"webDesign/pkg/util"
 )
 
 func Register(c *gin.Context) {
@@ -20,7 +23,7 @@ func Register(c *gin.Context) {
 	// 拉取用户信息，通过token判断用户权限
 	c.BindJSON(&message)
 	token := c.GetHeader("token")
-	level := jwt.GetUserLevel(token)
+	level := util.GetUserLevel(token)
 	code := e.SUCCESS
 
 	// 头像上传比较麻烦 若头像为空则使用默认头像
@@ -55,7 +58,7 @@ func DeleteUser(c *gin.Context) {
 	var id UserID
 	// 拉取用户信息，通过token判断用户权限
 	token := c.GetHeader("token")
-	level := jwt.GetUserLevel(token)
+	level := util.GetUserLevel(token)
 	code := e.SUCCESS
 
 	// 传入id无效，返回参数错误
@@ -96,7 +99,7 @@ func GetUserList(c *gin.Context) {
 
 	// 拉取用户信息，通过token判断用户权限
 	token := c.GetHeader("token")
-	level := jwt.GetUserLevel(token)
+	level := util.GetUserLevel(token)
 	code := e.SUCCESS
 
 	// 获取等级小于当前用户的用户列表
@@ -113,7 +116,7 @@ func ModifyUser(c *gin.Context) {
 
 	// 拉取用户信息，通过token判断用户权限
 	token := c.GetHeader("token")
-	level := jwt.GetUserLevel(token)
+	level := util.GetUserLevel(token)
 	code := e.SUCCESS
 
 	fmt.Println(level)
@@ -142,4 +145,41 @@ func ModifyUser(c *gin.Context) {
 		"code": code,
 		"msg":  e.GetMsg(code),
 	})
+}
+
+func Upload(c *gin.Context) {
+	code := e.ERROR
+	url := c.PostForm("url")
+	id := c.PostForm("id")
+	var fileName string
+	if id != "" {
+		if url != "" {
+			fileName = beego.Substr(url, 12, len(url)-16)
+		} else {
+			fileHeader, _ := c.FormFile("img")
+			// 如果获取图片成功
+			// 读取图片file并生成对应的md5
+			file, _ := fileHeader.Open()
+			fileName = crypto.EncryptFile(file)
+
+			dst := "./dist/static/img/" + fileName + ".jpg"
+			c.SaveUploadedFile(fileHeader, dst)
+		}
+		uid, err := strconv.Atoi(id)
+		if err == nil {
+			err := models.UpdateHead(fileName, uint(uid))
+			if err == nil {
+				code = e.SUCCESS
+			}
+		}
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"code": code,
+		"msg":  e.GetMsg(code),
+	})
+}
+
+func ModifyPassword(c *gin.Context) {
+
 }

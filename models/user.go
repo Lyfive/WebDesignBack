@@ -5,7 +5,7 @@
 **/
 package models
 
-import "webDesign/middleware/crypto"
+import "webDesign/pkg/crypto"
 
 type Message struct {
 	ID       uint   `json:"id" gorm:"primary_key"`
@@ -90,6 +90,14 @@ func GetUsers(level int) (users []Message) {
 func UpdateUser(message Message) error {
 	// 修改后信息进行加密
 	if err := db.Debug().Model(&Message{}).Where("id = ?", message.ID).Omit("id", "username", "password").Updates(message).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
+// UpdateHead 修改用户头像
+func UpdateHead(head string,id uint) error {
+	if err := db.Debug().Model(&Message{}).Where("id = ?", id).Omit("id", "username", "password").Updates(Message{Head: head}).Error; err != nil {
 		return err
 	}
 	return nil

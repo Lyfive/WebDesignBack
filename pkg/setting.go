@@ -15,6 +15,7 @@ var (
 
 	RunMode string
 
+	HTTPHost string
 	HTTPPort int
 
 	PageSize  int
@@ -43,6 +44,7 @@ func LoadServer() {
 		log.Fatalf("Fail to get section 'server': %v", err)
 	}
 
+	HTTPHost = sec.Key("HTTP_HOST").MustString("127.0.0.1")
 	HTTPPort = sec.Key("HTTP_PORT").MustInt(8080)
 }
 

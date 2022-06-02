@@ -16,14 +16,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func GetUserLevel(token string) int {
-	claims, err := util.ParseToken(token)
-	if err != nil {
-		return 4
-	}
-	return models.GetUser(claims.Username).Level
-}
-
 func JWT(level int) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var code int

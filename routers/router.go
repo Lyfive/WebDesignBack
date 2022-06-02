@@ -74,7 +74,7 @@ func InitRouter() *gin.Engine {
 			c.Redirect(http.StatusMovedPermanently, "/")
 		})
 
-		r.GET("/adminSet", func(c *gin.Context) {
+		r.GET("/admin", func(c *gin.Context) {
 			c.Redirect(http.StatusMovedPermanently, "/")
 		})
 
@@ -83,6 +83,9 @@ func InitRouter() *gin.Engine {
 	r.GET("/", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "index.html", "./index.html")
 	})
+
+	// 用户鉴定
+	r.POST("/check", api.CheckUser)
 
 	r.POST("/login", api.GetUser)
 	// 原界面上的注册 默认注册为普通用户
@@ -102,6 +105,12 @@ func InitRouter() *gin.Engine {
 
 		// 修改用户信息 要求被修改者权限比自己低，同时被修改后权限不能比自己高
 		users.PUT("/modify", jwt.JWT(models.Admin), v1.ModifyUser)
+
+		// 上传头像
+		users.POST("/upload", jwt.JWT(models.User), v1.Upload)
+
+		// 修改密码
+		users.PUT("/modifyPassword", jwt.JWT(models.User), v1.ModifyPassword)
 	}
 
 	students := r.Group("/student")
@@ -118,6 +127,9 @@ func InitRouter() *gin.Engine {
 		// 删除学生
 		students.DELETE("/delete", jwt.JWT(models.Admin), v1.Delete)
 
+
+		// 集体转出其他班级
+		students.PUT("/transfer",jwt.JWT(models.Admin),v1.Transfer)
 	}
 
 	// 成绩组

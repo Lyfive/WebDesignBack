@@ -8,6 +8,8 @@ package crypto
 import (
 	"crypto/md5"
 	"encoding/hex"
+	"io"
+	"mime/multipart"
 	"strings"
 )
 
@@ -18,5 +20,11 @@ func Check(content, encrypted string) bool {
 func Encrypt(data string) string {
 	h := md5.New()
 	h.Write([]byte(data))
+	return hex.EncodeToString(h.Sum(nil))
+}
+
+func EncryptFile(file multipart.File) string {
+	h := md5.New()
+	_, _ = io.Copy(h, file)
 	return hex.EncodeToString(h.Sum(nil))
 }
