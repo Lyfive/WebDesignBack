@@ -11,13 +11,6 @@ import (
 	"webDesign/pkg/e"
 )
 
-type Course struct {
-	// 课程ID
-	CID uint `json:"cid" gorm:"primaryKey;autoIncrement"`
-	// 课程名
-	Title string `json:"title" gorm:"not null;varchar(10)"`
-}
-
 type Grade struct {
 	// 成绩ID
 	GID uint `json:"gid" gorm:"primaryKey;autoIncrement"`
@@ -35,16 +28,6 @@ type ViewGrade struct {
 	Name   string `json:"name"`
 	Title  string `json:"title"`
 	Mark   uint   `json:"mark"`
-}
-
-// GetCourse  获取课程信息
-func GetCourse(title string) Course {
-	var course Course
-	if err := db.First(&course, "title = ?", title).Error; err != nil {
-		return Course{}
-	} else {
-		return course
-	}
 }
 
 // AddGrade 添加成绩

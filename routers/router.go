@@ -7,7 +7,11 @@ package routers
 
 import (
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 	"net/http"
+
+	_ "webDesign/docs"
 	"webDesign/middleware/jwt"
 	"webDesign/models"
 	setting "webDesign/pkg"
@@ -15,7 +19,25 @@ import (
 	v1 "webDesign/routers/api/v1"
 )
 
+// @title           Student Management System
+// @version         1.0
+// @description     使用Go+Gin+Vue3+Element-plus的框架开发的学生管理系统管理后台
+// @termsOfService  http://swagger.io/terms/
+
+// @contact.name   LyFive
+// @contact.url    https://lyfive.github.io/
+// @contact.email  1169442146@qq.com
+
+// @license.name  Apache 2.0
+// @license.url   http://www.apache.org/licenses/LICENSE-2.0.html
+
+// @host      localhost:8080
+// @BasePath  /
+
+// @securityDefinitions.basic  BasicAuth
 func InitRouter() *gin.Engine {
+
+	gin.SetMode(setting.RunMode)
 	r := gin.Default()
 	r.Use(gin.Logger())
 	r.Use(gin.Recovery())
@@ -23,7 +45,6 @@ func InitRouter() *gin.Engine {
 	r.Use(func(c *gin.Context) {
 		c.Writer.Header().Set("Access-Control-Expose-Headers", "Token")
 	})
-	gin.SetMode(setting.RunMode)
 
 	// 静态文件处理
 	{
@@ -34,6 +55,15 @@ func InitRouter() *gin.Engine {
 		r.StaticFile("/33_close.png", "./dist/33_close.png")
 		r.Static("/static", "./dist/static")
 		r.LoadHTMLFiles("dist/index.html")
+	}
+
+	r.GET("/", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "index.html", "./index.html")
+	})
+
+	// swagger
+	{
+		r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	}
 
 	// 重定向
@@ -80,10 +110,6 @@ func InitRouter() *gin.Engine {
 
 	}
 
-	r.GET("/", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "index.html", "./index.html")
-	})
-
 	// 用户鉴定
 	r.POST("/check", api.CheckUser)
 
@@ -127,9 +153,8 @@ func InitRouter() *gin.Engine {
 		// 删除学生
 		students.DELETE("/delete", jwt.JWT(models.Admin), v1.Delete)
 
-
 		// 集体转出其他班级
-		students.PUT("/transfer",jwt.JWT(models.Admin),v1.Transfer)
+		students.PUT("/transfer", jwt.JWT(models.Admin), v1.Transfer)
 	}
 
 	// 成绩组
@@ -172,6 +197,29 @@ func InitRouter() *gin.Engine {
 
 	}
 
+	// 教务处理
+	education := r.Group("/education")
+	//education.Use(jwt.JWT(models.Admin))
+	{
+		education.POST("/faculty", v1.AddFaculty)
+		education.DELETE("/faculty", v1.DeleteFaculty)
+
+		education.POST("/department", v1.AddDepartment)
+		education.DELETE("/department", v1.DeleteDepartment)
+
+		education.POST("/session", v1.AddSession)
+		education.DELETE("/session", v1.DeleteSession)
+
+		education.POST("/class", v1.AddClass)
+		education.DELETE("/class", v1.DeleteClass)
+
+		education.POST("/course", v1.AddCourse)
+		education.DELETE("/course", v1.DeleteCourse)
+		education.GET("/courses", v1.AllCourses)
+
+		education.POST("/dc", v1.AddDC)
+		education.DELETE("/dc", v1.DeleteDC)
+	}
 	return r
 
 }

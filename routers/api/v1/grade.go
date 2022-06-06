@@ -16,6 +16,14 @@ import (
 )
 
 // Add 添加成绩
+// @Summary      添加成绩
+// @Description  根据学生id和课程id添加成绩
+// @Tags         成绩组
+// @Accept       json
+// @Produce      json
+// @Param        grade body models.Grade true "添加成绩"
+// @Success      200  body int
+// @Router       /grade/add [post]
 func Add(c *gin.Context) {
 	var grade models.Grade
 	c.BindJSON(&grade)

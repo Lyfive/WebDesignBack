@@ -17,6 +17,16 @@ import (
 	"webDesign/pkg/util"
 )
 
+// Register 用户注册
+// @Summary 用户注册
+// @Description 在用户界面为用户注册，可以进行提权、添加头像
+// @Tags 用户
+// @Accept json
+// @Produce json
+// @Param message body models.Message true "用户注册信息"
+// @Success 200 "SUCCESS"
+// @Failure 401 "权限不足"
+// @Router /user/register [post]
 func Register(c *gin.Context) {
 	var message models.Message
 
@@ -53,6 +63,16 @@ type UserID struct {
 	ID uint `json:"id"`
 }
 
+// DeleteUser 删除用户
+// @Summary 删除用户
+// @Description 删除用户，只有管理员可以删除用户
+// @Tags 用户
+// @Accept json
+// @Produce json
+// @Param id body UserID true "用户ID"
+// @Success 200 "SUCCESS"
+// @Failure 401 "权限不足"
+// @Router /user/delete [delete]
 func DeleteUser(c *gin.Context) {
 
 	var id UserID
@@ -95,6 +115,15 @@ func DeleteUser(c *gin.Context) {
 	})
 }
 
+// GetUserList 获取用户列表
+// @Summary 获取用户列表
+// @Description 获取用户列表，只有管理员可以获取用户列表
+// @Tags 用户
+// @Accept json
+// @Produce json
+// @Success 200 "SUCCESS"
+// @Failure 401 "权限不足"
+// @Router /user/users [get]
 func GetUserList(c *gin.Context) {
 
 	// 拉取用户信息，通过token判断用户权限
@@ -112,6 +141,16 @@ func GetUserList(c *gin.Context) {
 	})
 }
 
+// ModifyUser 修改用户信息
+// @Summary 修改用户信息
+// @Description 高权限可以修改低权限信息，但是提权和自己同水平就不能修改
+// @Tags 用户
+// @Accept json
+// @Produce json
+// @Param user body models.Message true "修改后的用户信息"
+// @Success 200 "SUCCESS"
+// @Failure 401 "权限不足"
+// @Router /user/modify [put]
 func ModifyUser(c *gin.Context) {
 
 	// 拉取用户信息，通过token判断用户权限

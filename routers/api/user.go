@@ -26,6 +26,13 @@ type user struct {
 }
 
 // CheckUser 检查token是否过期
+// @Summary      检查token是否过期
+// @Description  根据header的token值检查token是否过期
+// @Tags         checkUser
+// @Accept       json
+// @Produce      json
+// @Success      200            {string}  string  "Success"
+// @Router       /check [post]
 func CheckUser(c *gin.Context) {
 	token := c.GetHeader("token")
 	code := e.SUCCESS
@@ -39,6 +46,15 @@ func CheckUser(c *gin.Context) {
 	})
 }
 
+// GetUser 获取用户信息
+// @Summary      登录并获取用户信息
+// @Description  发送账密验证登录，返回用户信息和token
+// @Tags         login
+// @Accept       json
+// @Produce      json
+// @Param        token header string true "Token"
+// @Success      200            {string}  string  "Success"
+// @Router       /login [post]
 func GetUser(c *gin.Context) {
 	valid := validation.Validation{}
 	var a user
@@ -109,6 +125,15 @@ func CheckString(str string) bool {
 	return re.MatchString(str)
 }
 
+// RegisterUser 注册用户
+// @Summary      根据用户信息注册普通用户
+// @Description  发送姓名账密注册普通用户
+// @Tags         register
+// @Accept       json
+// @Produce      json
+// @Param        user body models.Message true "用户信息"
+// @Success      200            {string}  string  "Success"
+// @Router       /register [post]
 func RegisterUser(c *gin.Context) {
 	var user models.Message
 	c.BindJSON(&user)

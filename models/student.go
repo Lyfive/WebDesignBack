@@ -11,46 +11,6 @@ import (
 	"webDesign/pkg/e"
 )
 
-type Faculty struct {
-	// 学院ID
-	FID uint `json:"fid" gorm:"primaryKey;autoIncrement"`
-	// 学院代码
-	FCODE string `json:"fcode" gorm:"unique;not null;type:char(2)"`
-	// 学院名称
-	Name string `json:"name" gorm:"not null;varchar(10)"`
-}
-
-type Department struct {
-	// 系ID
-	DID uint `json:"did" gorm:"primaryKey;autoIncrement"`
-	// 归属学院ID
-	FID uint `json:"fid" gorm:"not null"`
-	// 系代码
-	DCODE string `json:"dcode" gorm:"unique;not null;type:char(2)"`
-	// 系名称
-	Name string `json:"name" gorm:"not null;varchar(10)"`
-}
-
-type Session struct {
-	// 学期ID
-	DID uint `json:"did" gorm:"primaryKey;autoIncrement"`
-	// 学期名称
-	Session string `json:"session" gorm:"primaryKey;char(2)"`
-}
-
-type Class struct {
-	// 班级ID
-	SID uint `json:"sid" gorm:"primaryKey;autoIncrement"`
-	// 归属系ID
-	DID uint `json:"did" gorm:"not null"`
-	// 所属年级
-	Session string `json:"session" gorm:"not null;type:char(2)"`
-	// 班级代码
-	SCODE string `json:"fcode" gorm:"not null;type:char(2)"`
-	// 班级名称
-	Name string `json:"name" gorm:"not null;varchar(10)"`
-}
-
 type Student struct {
 	// 学号
 	Number   string    `json:"number" gorm:"primaryKey;type:char(10)"`
@@ -78,60 +38,6 @@ type ViewStudent struct {
 	Birthday string `json:"birthday" gorm:"column:birthday"`
 	Class    string `json:"class" gorm:"column:class"`
 	Session  string `json:"session" gorm:"column:session"`
-}
-
-func GetFacultyByID(FID uint) Faculty {
-	var faculty Faculty
-
-	if err := db.First(&faculty, FID).Error; err != nil {
-		return Faculty{}
-	} else {
-		return faculty
-	}
-}
-
-func GetDepartmentID(number string) uint {
-	var student Student
-	db.First(&student, number)
-	return GetClassByID(student.SID).DID
-}
-
-func GetDepartmentByID(DID uint) Department {
-	var department Department
-
-	if err := db.First(&department, DID).Error; err != nil {
-		return Department{}
-	} else {
-		return department
-	}
-}
-
-func GetClass(number string) Class {
-	c := Class{}
-	var stu Student
-	if err := db.Debug().Where("number = ?", number).First(&stu).Error; err == nil {
-		c = GetClassByID(stu.SID)
-		return c
-	}
-	return Class{}
-}
-
-func GetClassByID(SID uint) Class {
-	c := Class{}
-	if err := db.Debug().Where("s_id = ?", SID).First(&c).Error; err == nil {
-		return c
-	} else {
-		return Class{}
-	}
-}
-
-func GetClassName(SID uint) string {
-	var class Class
-	if err := db.Select("name").First(&class, SID).Error; err != nil {
-		return ""
-	} else {
-		return class.Name
-	}
 }
 
 // CheckStudent 检查是否存在学生
@@ -228,6 +134,7 @@ func DeleteStudents(numbers *[]string) int {
 	}
 }
 
+// TransferStudents 批量转入班级
 func TransferStudents(numbers *[]string, sid uint) int {
 	if err := db.Model(&Student{}).Where("number in (?)", *numbers).Update("s_id", sid).Error; err != nil {
 		return e.ERROR
