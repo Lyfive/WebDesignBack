@@ -112,49 +112,43 @@ type GradeList struct {
 }
 
 func Create(c *gin.Context) {
-
 	number := c.Query("number")
 	// 获取班级 ID
 	class := models.GetClass(number)
-
 	if class.SID <= 0 {
 		c.JSON(http.StatusOK, gin.H{
 			"code": e.ERROR_NOT_EXIST_CLASS,
 			"msg":  e.GetMsg(e.ERROR_NOT_EXIST_CLASS),
 		})
-	} else {
-		// 根据系ID 查询班级所有学的课程
-		courses := models.GetDepartmentCourses(class.DID)
-		fmt.Println(courses)
-
-		// 班级学生列表
-		students := models.GetClassStudents(class.SID)
-		fmt.Println(students)
-		scnt := len(students)
-
-		// 成绩表
-		grades := models.GetStudentsGrades(class.SID)
-		fmt.Println(grades)
-
-		// 成绩信息
-		gradeMessage := make(map[string]GradeList)
-		for _, student := range students {
-			gradeMessage[student.Number] = GradeList{Name: student.Name, Grades: make(map[string]uint)}
-		}
-
-		// 总成绩
-		avg := make(map[string]uint)
-		for _, grade := range grades {
-			avg[grade.Title] += grade.Mark
-			avg["班级总成绩"] += grade.Mark
-			gradeMessage[grade.Number].Grades[grade.Title] = grade.Mark
-			gradeMessage[grade.Number].Grades["总成绩"] += grade.Mark
-		}
-
-		// 创建file
-		f := excelize.NewFile()
-
-		// 创建样式
+		return
+	}
+	// 根据系ID 查询班级所有学的课程
+	courses := models.GetDepartmentCourses(class.DID)
+	fmt.Println(courses)
+	// 班级学生列表
+	students := models.GetClassStudents(class.SID)
+	fmt.Println(students)
+	scnt := len(students)
+	// 成绩表
+	grades := models.GetStudentsGrades(class.SID)
+	fmt.Println(grades)
+	// 成绩信息
+	gradeMessage := make(map[string]GradeList)
+	for _, student := range students {
+		gradeMessage[student.Number] = GradeList{Name: student.Name, Grades: make(map[string]uint)}
+	}
+	// 总成绩
+	avg := make(map[string]uint)
+	for _, grade := range grades {
+		avg[grade.Title] += grade.Mark
+		avg["班级总成绩"] += grade.Mark
+		gradeMessage[grade.Number].Grades[grade.Title] = grade.Mark
+		gradeMessage[grade.Number].Grades["总成绩"] += grade.Mark
+	}
+	// 创建file
+	f := excelize.NewFile()
+	// 创建样式
+	{
 		s, _ := f.NewStyle(`{"alignment":{
 		"horizontal":"center",
 		"vertical":"center"
@@ -207,18 +201,17 @@ func Create(c *gin.Context) {
 			f.SetCellValue("s1", GetAxis(col, index), float64(avg["班级总成绩"])/float64(scnt))
 			index++
 		}
-
-		f.SetSheetName("s1", class.Name+"班级成绩表")
-		filePath := "./runtime/file/Grade.xlsx"
-		err = f.SaveAs(filePath)
-		if err != nil {
-			return
-		}
-		err = f.Close()
-		if err != nil {
-			fmt.Println(err)
-		}
-		c.File(filePath)
 	}
+	f.SetSheetName("s1", class.Name+"班级成绩表")
+	filePath := "./runtime/file/Grade.xlsx"
+	err := f.SaveAs(filePath)
+	if err != nil {
+		return
+	}
+	err = f.Close()
+	if err != nil {
+		fmt.Println(err)
+	}
+	c.File(filePath)
 
 }

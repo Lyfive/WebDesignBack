@@ -108,6 +108,10 @@ func InitRouter() *gin.Engine {
 			c.Redirect(http.StatusMovedPermanently, "/")
 		})
 
+		r.GET("/education", func(c *gin.Context) {
+			c.Redirect(http.StatusMovedPermanently, "/")
+		})
+
 	}
 
 	// 用户鉴定
@@ -199,7 +203,7 @@ func InitRouter() *gin.Engine {
 
 	// 教务处理
 	education := r.Group("/education")
-	//education.Use(jwt.JWT(models.Admin))
+	education.Use(jwt.JWT(models.Admin))
 	{
 		education.POST("/faculty", v1.AddFaculty)
 		education.DELETE("/faculty", v1.DeleteFaculty)
