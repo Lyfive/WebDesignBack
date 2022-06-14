@@ -151,6 +151,9 @@ func InitRouter() *gin.Engine {
 		// 查看学生信息
 		students.GET("/view", jwt.JWT(models.User), v1.View)
 
+		// 检索学生信息
+		students.GET("/search", jwt.JWT(models.User), v1.Search)
+
 		// 修改学生信息
 		students.PUT("/modify", jwt.JWT(models.Admin), v1.Modify)
 
@@ -159,6 +162,7 @@ func InitRouter() *gin.Engine {
 
 		// 集体转出其他班级
 		students.PUT("/transfer", jwt.JWT(models.Admin), v1.Transfer)
+
 	}
 
 	// 成绩组

@@ -36,6 +36,7 @@ func Add(c *gin.Context) {
 
 type GradeMsg struct {
 	Title string `json:"title"`
+	CID   uint   `json:"cid"`
 	Mark  uint   `json:"mark"`
 }
 type Data struct {
@@ -49,18 +50,36 @@ func exchange(grades []models.ViewGrade) []Data {
 	data := make(map[string]*Data)
 	for _, v := range grades {
 		if _, ok := data[v.Number]; !ok {
+
 			data[v.Number] = &Data{
 				Number: v.Number,
 				Name:   v.Name,
 				Grades: make([]GradeMsg, 0),
 			}
+
 		}
-		data[v.Number].Grades = append(data[v.Number].Grades, GradeMsg{Title: v.Title, Mark: v.Mark})
+		data[v.Number].Grades = append(data[v.Number].Grades, GradeMsg{Title: v.Title, CID: v.CID, Mark: v.Mark})
 	}
 
 	length := len(data)
 	slice := make([]Data, length)
-	for _, v := range data {
+	for k, v := range data {
+		// 获取班级 ID
+		class := models.GetClass(k)
+		// 根据系ID 查询班级所有学的课程
+		courses := models.GetDepartmentCourses(class.DID)
+		for _, course := range courses {
+			f := false
+			for _, grade := range v.Grades {
+				if course.Title == grade.Title {
+					f = true
+					break
+				}
+			}
+			if !f {
+				v.Grades = append(v.Grades, GradeMsg{Title: course.Title, CID: course.CID, Mark: 0})
+			}
+		}
 		length--
 		slice[length] = *v
 	}

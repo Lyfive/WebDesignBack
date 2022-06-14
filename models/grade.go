@@ -27,6 +27,7 @@ type ViewGrade struct {
 	Number string `json:"number"`
 	Name   string `json:"name"`
 	Title  string `json:"title"`
+	CID    uint   `json:"cid"`
 	Mark   uint   `json:"mark"`
 }
 
@@ -51,7 +52,7 @@ func AddGrade(grade Grade) int {
 // FindGrades 根据学号查询相关成绩
 func FindGrades(number string) []ViewGrade {
 	var grades []ViewGrade
-	db.Debug().Debug().Raw("select students.name, students.number, courses.title,grades.mark "+
+	db.Debug().Raw("select students.name, students.number, courses.title,grades.c_id,grades.mark "+
 		"from grades,students,courses "+
 		"where students.number like ? and grades.c_id = courses.c_id and students.number = grades.number", number).Scan(&grades) // 模糊查询
 	return grades

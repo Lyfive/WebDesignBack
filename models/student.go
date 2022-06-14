@@ -109,6 +109,12 @@ func FindStudent(number string) []ViewStudent {
 	}
 }
 
+func FindStudentByMessage(fid, did, sid, session string) []ViewStudent {
+	stu := make([]ViewStudent, 0)
+	db.Raw("select students.number number,students.name name,students.sex sex,students.birthday birthday,classes.name class,classes.session session from students,classes,departments,faculties where classes.session like ? and classes.s_id like ? and departments.d_id like ? and faculties.f_id like ? and students.s_id = classes.s_id and classes.d_id = departments.d_id and departments.f_id = faculties.f_id", session, sid, did, fid).Scan(&stu)
+	return stu
+}
+
 // UpdateStudent 更新学生信息
 func UpdateStudent(studentInfo StudentInfo) int {
 	birthday, _ := time.Parse("2006-01-02", studentInfo.Birthday)

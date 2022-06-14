@@ -11,6 +11,7 @@ import (
 	"net/http"
 	"regexp"
 	"webDesign/models"
+	setting "webDesign/pkg"
 	"webDesign/pkg/crypto"
 	"webDesign/pkg/detection"
 	"webDesign/pkg/e"
@@ -98,7 +99,7 @@ func GetUser(c *gin.Context) {
 			return
 		}
 		data["id"] = user.ID
-		data["head"] = "/static/img/" + user.Head + ".jpg"
+		data["head"] = setting.HOST + "/static/img/" + user.Head + ".jpg"
 		data["username"] = user.Username
 		data["level"] = models.GetLevel(user.Level)
 		err = models.UpdateVisitsNumber()
@@ -144,7 +145,7 @@ func RegisterUser(c *gin.Context) {
 	if CheckString(user.Password) && detection.CheckSensitiveWord(user.Username) && detection.CheckSensitiveWord(user.Name) {
 		user.Password = crypto.Encrypt(user.Password)
 		user.Level = models.User
-		user.Head = "https://github.com/Lyfive/MyPictures/blob/master/head/go1.png?raw=true"
+		user.Head = "30616305ef290e389d9019a0683a8046"
 		err := models.AddUser(&user)
 		if err != nil {
 			code = e.ERROR_EXIST_USER

@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"strconv"
 	"time"
 	"webDesign/models"
 	"webDesign/pkg/e"
@@ -32,6 +33,50 @@ func View(c *gin.Context) {
 	number := c.Query("number")
 	fmt.Println(number)
 	viewStudent := models.FindStudent(number)
+	code := e.SUCCESS
+	if len(viewStudent) == 0 {
+		code = e.ERROR_NOT_EXIST_NUMBER
+	}
+	for i := 0; i < len(viewStudent); i++ {
+		//2002-11-15T00:00:00+08:00
+		mid, _ := time.ParseInLocation("2006-01-02T15:04:05+08:00", viewStudent[i].Birthday, time.Local)
+		viewStudent[i].Birthday = mid.Format("2006-01-02")
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"code":     code,
+		"msg":      e.GetMsg(code),
+		"students": viewStudent,
+	})
+}
+
+func StringToUint(str string) uint {
+	atoi, err := strconv.Atoi(str)
+	if err != nil {
+		return 0
+	}
+	return uint(atoi)
+}
+func Search(c *gin.Context) {
+	//fmt.Println(c.Query("number"))
+
+	fid := c.Query("fid")
+	did := c.Query("did")
+	sid := c.Query("sid")
+	session := c.Query("session")
+	if fid == "" {
+		fid = "%"
+	}
+	if did == "" {
+		did = "%"
+	}
+	if sid == "" {
+		sid = "%"
+	}
+	if session == "" {
+		session = "%"
+	}
+	viewStudent := models.FindStudentByMessage(fid, did, sid, session)
+
 	code := e.SUCCESS
 	if len(viewStudent) == 0 {
 		code = e.ERROR_NOT_EXIST_NUMBER

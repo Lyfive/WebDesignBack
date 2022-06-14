@@ -12,6 +12,7 @@ import (
 	"net/http"
 	"strconv"
 	"webDesign/models"
+	setting "webDesign/pkg"
 	"webDesign/pkg/crypto"
 	"webDesign/pkg/e"
 	"webDesign/pkg/util"
@@ -38,7 +39,7 @@ func Register(c *gin.Context) {
 
 	// 头像上传比较麻烦 若头像为空则使用默认头像
 	if message.Head == "" {
-		message.Head = "https://github.com/Lyfive/MyPictures/blob/master/head/LyFiveHead.jpg?raw=true"
+		message.Head = "30616305ef290e389d9019a0683a8046"
 	}
 	fmt.Println(message)
 	if message.Level < level {
@@ -190,6 +191,7 @@ func Upload(c *gin.Context) {
 	code := e.ERROR
 	url := c.PostForm("url")
 	id := c.PostForm("id")
+	picture := ""
 	var fileName string
 	if id != "" {
 		if url != "" {
@@ -204,6 +206,7 @@ func Upload(c *gin.Context) {
 			dst := "./dist/static/img/" + fileName + ".jpg"
 			c.SaveUploadedFile(fileHeader, dst)
 		}
+		picture = setting.HOST + "/static/img/" + fileName + ".jpg"
 		uid, err := strconv.Atoi(id)
 		if err == nil {
 			err := models.UpdateHead(fileName, uint(uid))
@@ -215,6 +218,7 @@ func Upload(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"code": code,
 		"msg":  e.GetMsg(code),
+		"url":  picture,
 	})
 }
 

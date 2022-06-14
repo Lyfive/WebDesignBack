@@ -125,7 +125,7 @@ func DeleteDepartment(c *gin.Context) {
 func AddSession(c *gin.Context) {
 	var session models.Session
 	code := e.SUCCESS
-	if err := c.ShouldBindJSON(&session); err != nil {
+	if err := c.ShouldBindJSON(&session); err != nil || len(session.Session) != 2 || session.Session[0] < '0' || session.Session[0] > '9' || session.Session[1] < '0' || session.Session[1] > '9' {
 		code = e.INVALID_PARAMS
 		c.JSON(200, gin.H{
 			"code": code,
