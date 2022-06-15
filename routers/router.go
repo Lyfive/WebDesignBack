@@ -140,7 +140,7 @@ func InitRouter() *gin.Engine {
 		users.POST("/upload", jwt.JWT(models.User), v1.Upload)
 
 		// 修改密码
-		users.PUT("/modifyPassword", jwt.JWT(models.User), v1.ModifyPassword)
+		users.PUT("/change", jwt.JWT(models.User), v1.ModifyPassword)
 	}
 
 	students := r.Group("/student")

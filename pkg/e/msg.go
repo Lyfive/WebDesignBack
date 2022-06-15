@@ -23,6 +23,8 @@ var MsgFlags = map[int]string{
 	ERROR_AUTH:                       "Token错误",
 	ERROR_INSUFFICIENT_ACCESS_RIGHTS: "访问权限不足",
 	ERROR_EXIST_USER:                 "已存在该用户",
+	ERROR_NOT_EXIST_USER:             "用户不存在",
+	ERROR_PASSWORD:                   "密码错误",
 }
 
 func GetMsg(code int) string {

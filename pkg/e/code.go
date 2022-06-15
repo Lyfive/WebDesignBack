@@ -23,4 +23,6 @@ const (
 	ERROR_AUTH                       = 20004
 	ERROR_INSUFFICIENT_ACCESS_RIGHTS = 20005
 	ERROR_EXIST_USER                 = 20006
+	ERROR_NOT_EXIST_USER             = 20007
+	ERROR_PASSWORD                   = 20008
 )

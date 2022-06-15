@@ -135,6 +135,10 @@ func GetUserList(c *gin.Context) {
 	// 获取等级小于当前用户的用户列表
 	users := models.GetUsers(level)
 
+	for index, _ := range users {
+		users[index].Head = setting.HOST + "/static/img/" + users[index].Head + ".jpg"
+	}
+
 	c.JSON(http.StatusOK, gin.H{
 		"code":  code,
 		"msg":   e.GetMsg(code),
@@ -223,5 +227,26 @@ func Upload(c *gin.Context) {
 }
 
 func ModifyPassword(c *gin.Context) {
-
+	user := struct {
+		Username    string `json:"username"`
+		OldPassword string `json:"oldPassword"`
+		NewPassword string `json:"newPassword"`
+	}{}
+	code := e.SUCCESS
+	c.BindJSON(&user)
+	user.OldPassword = crypto.Encrypt(user.OldPassword)
+	user.NewPassword = crypto.Encrypt(user.NewPassword)
+	id := models.CheckUser(user.Username, user.OldPassword)
+	if id > 0 {
+		err := models.UpdatePassword(user.NewPassword, id)
+		if err != nil {
+			code = e.ERROR
+		}
+	} else {
+		code = e.ERROR_PASSWORD
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"code": code,
+		"msg":  e.GetMsg(code),
+	})
 }

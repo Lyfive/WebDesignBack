@@ -96,8 +96,15 @@ func UpdateUser(message Message) error {
 }
 
 // UpdateHead 修改用户头像
-func UpdateHead(head string,id uint) error {
+func UpdateHead(head string, id uint) error {
 	if err := db.Debug().Model(&Message{}).Where("id = ?", id).Omit("id", "username", "password").Updates(Message{Head: head}).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
+func UpdatePassword(password string, id uint) error {
+	if err := db.Debug().Model(&Message{ID: id}).Update("password", password).Error; err != nil {
 		return err
 	}
 	return nil
