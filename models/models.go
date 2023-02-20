@@ -1,8 +1,12 @@
-/**
- @author: 李映飞
- @date:   2022/4/28
- @note:
-**/
+/*
+*
+
+	@author: 李映飞
+	@date:   2022/4/28
+	@note:
+
+*
+*/
 package models
 
 import (
@@ -45,11 +49,14 @@ func init() {
 }
 
 func InitModels() {
+	db.AutoMigrate(&System{})
 	db.AutoMigrate(&Message{})
 	db.AutoMigrate(&Faculty{})
 	db.AutoMigrate(&Department{})
+	db.AutoMigrate(&Session{})
 	db.AutoMigrate(&Class{})
 	db.AutoMigrate(&Student{})
 	db.AutoMigrate(&Course{})
 	db.AutoMigrate(&Grade{})
+	db.AutoMigrate(&DC{})
 }
