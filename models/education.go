@@ -1,8 +1,12 @@
-/**
- @author: 李映飞
- @date:   2022/6/6
- @note:
-**/
+/*
+*
+
+	@author: 李映飞
+	@date:   2022/6/6
+	@note:
+
+*
+*/
 package models
 
 // 对学院、专业、班级、学生的增删改查
@@ -208,7 +212,7 @@ func DeleteCourse(CID uint) error {
 }
 
 func AddDC(dc *DC) error {
-	if err := db.Table("dc").Create(&dc).Error; err != nil {
+	if err := db.Create(&dc).Error; err != nil {
 		return err
 	} else {
 		return nil
@@ -216,7 +220,7 @@ func AddDC(dc *DC) error {
 }
 
 func DeleteDC(dc *DC) error {
-	if err := db.Table("dc").Where("d_id = ? and c_id = ?", dc.DID, dc.CID).Delete(&dc).Error; err != nil {
+	if err := db.Where("d_id = ? and c_id = ?", dc.DID, dc.CID).Delete(&dc).Error; err != nil {
 		return err
 	} else {
 		return nil

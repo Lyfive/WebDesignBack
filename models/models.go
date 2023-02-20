@@ -49,7 +49,10 @@ func init() {
 }
 
 func InitModels() {
-	db.AutoMigrate(&System{})
+	err := db.AutoMigrate(&System{})
+	if err == nil {
+		AddSystemMessage()
+	}
 	db.AutoMigrate(&Message{})
 	db.AutoMigrate(&Faculty{})
 	db.AutoMigrate(&Department{})

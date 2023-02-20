@@ -1,8 +1,12 @@
-/**
- @author: 李映飞
- @date:   2022/4/29
- @note:
-**/
+/*
+*
+
+	@author: 李映飞
+	@date:   2022/4/29
+	@note:
+
+*
+*/
 package models
 
 import (
@@ -77,7 +81,7 @@ func QueryGrades(matchStr string, isOpen bool) []ViewGrade {
 // GetDepartmentCourses  根据class ID获取班级所学课程
 func GetDepartmentCourses(DID uint) []Course {
 	var courses []Course
-	db.Raw("select courses.c_id c_id,courses.title title from dc,courses where dc.d_id = ? and dc.c_id = courses.c_id", DID).
+	db.Raw("select courses.c_id c_id,courses.title title from dcs,courses where dcs.d_id = ? and dcs.c_id = courses.c_id", DID).
 		Scan(&courses)
 	//fmt.Println(courses)
 	return courses

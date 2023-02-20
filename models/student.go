@@ -1,8 +1,12 @@
-/**
- @author: 李映飞
- @date:   2022/4/29
- @note:
-**/
+/*
+*
+
+	@author: 李映飞
+	@date:   2022/4/29
+	@note:
+
+*
+*/
 package models
 
 import (
@@ -142,7 +146,7 @@ func DeleteStudents(numbers *[]string) int {
 
 // TransferStudents 批量转入班级
 func TransferStudents(numbers *[]string, sid uint) int {
-	if err := db.Model(&Student{}).Where("number in (?)", *numbers).Update("'s_id'", sid).Error; err != nil {
+	if err := db.Model(&Student{}).Where("number in (?)", *numbers).Update("s_id", sid).Error; err != nil {
 		return e.ERROR
 	}
 	return e.SUCCESS

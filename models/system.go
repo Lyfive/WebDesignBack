@@ -1,8 +1,12 @@
-/**
- @author: 李映飞
- @date:   2022/5/22
- @note:
-**/
+/*
+*
+
+	@author: 李映飞
+	@date:   2022/5/22
+	@note:
+
+*
+*/
 package models
 
 import (
@@ -46,6 +50,15 @@ func UpdateVisitsNumber() error {
 	system.VisitsNumber++
 	fmt.Println(system)
 	err = db.Debug().Model(&system).Where("create_time = ?", system.CreateTime).Update("visits_number", system.VisitsNumber).Error
+	return err
+}
+
+func AddSystemMessage() error {
+	var system System
+	system.CreateTime = time.Now()
+	system.Version = "1.0.0"
+	system.VisitsNumber = 0
+	err := db.Create(&system).Error
 	return err
 }
 

@@ -1,8 +1,12 @@
-/**
- @author: 李映飞
- @date:   2022/5/22
- @note:
-**/
+/*
+*
+
+	@author: 李映飞
+	@date:   2022/5/22
+	@note:
+
+*
+*/
 package models
 
 type ViewFaculty struct {
@@ -69,6 +73,6 @@ func GetStudentsByClass(sid uint) ([]*ViewStudentMessage, error) {
 
 func GetCoursesByDepartment(did uint) ([]Course, error) {
 	courses := make([]Course, 0)
-	err := db.Raw("select courses.c_id c_id ,courses.title title from courses,dc where courses.c_id = dc.c_id and dc.d_id = ?", did).Scan(&courses).Error
+	err := db.Raw("select courses.c_id c_id ,courses.title title from courses,dcs where courses.c_id = dcs.c_id and dcs.d_id = ?", did).Scan(&courses).Error
 	return courses, err
 }
